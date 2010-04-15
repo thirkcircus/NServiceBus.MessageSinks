@@ -1,0 +1,9 @@
+obj
+bin
+App.?onfig
+*.user
+*.suo
+_ReSharper.*
+*.resharper
+*.?ache
+~$*

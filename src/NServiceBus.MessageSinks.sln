@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "projects", "projects", "{468D41D3-8A1C-45F9-9DFD-63A0303C404F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{6C8BF511-1491-4CE7-8C6D-78B85594ED7F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceBus.MessageSinks", "proj\NServiceBus.MessageSinks\NServiceBus.MessageSinks.csproj", "{7F4C25C4-1C5C-458B-8D2B-0F916774B69B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceBus.MessageSinks.Tests", "tests\NServiceBus.MessageSinks.Tests\NServiceBus.MessageSinks.Tests.csproj", "{CCEA4E1A-3287-4B5B-9810-B03FB538F774}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7F4C25C4-1C5C-458B-8D2B-0F916774B69B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F4C25C4-1C5C-458B-8D2B-0F916774B69B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F4C25C4-1C5C-458B-8D2B-0F916774B69B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F4C25C4-1C5C-458B-8D2B-0F916774B69B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCEA4E1A-3287-4B5B-9810-B03FB538F774}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCEA4E1A-3287-4B5B-9810-B03FB538F774}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCEA4E1A-3287-4B5B-9810-B03FB538F774}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCEA4E1A-3287-4B5B-9810-B03FB538F774}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7F4C25C4-1C5C-458B-8D2B-0F916774B69B} = {468D41D3-8A1C-45F9-9DFD-63A0303C404F}
+		{CCEA4E1A-3287-4B5B-9810-B03FB538F774} = {6C8BF511-1491-4CE7-8C6D-78B85594ED7F}
+	EndGlobalSection
+EndGlobal
