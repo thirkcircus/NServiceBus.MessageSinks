@@ -44,8 +44,7 @@
     </Compile>
     <Compile Include="IMessageSink.cs" />
     <Compile Include="MessageSinkTransport.cs" />
-    <Compile Include="MessageSinkTransport.generated.cs" />
-    <Compile Include="ProcessingStatus.cs" />
+    <Compile Include="RootMessageSink.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

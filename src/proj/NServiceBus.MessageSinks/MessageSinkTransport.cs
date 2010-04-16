@@ -1,84 +1,87 @@
 namespace NServiceBus.MessageSinks
 {
 	using System;
-	using System.Collections.Generic;
 	using Unicast.Transport;
 
-	public partial class MessageSinkTransport : ITransport
+	public class MessageSinkTransport : ITransport
 	{
 		[ThreadStatic]
-		private static ProcessingStatus status;
+		private static IMessageSink rootSink;
 
-		private readonly ITransport inner;
-		private readonly Func<IEnumerable<IMessageSink>> messageSinks;
+		private readonly ITransport transport;
+		private readonly Func<RootMessageSink> messageSinkFactory;
 
-		public MessageSinkTransport(ITransport inner, Func<IEnumerable<IMessageSink>> messageSinks)
+		public MessageSinkTransport(ITransport transport, Func<RootMessageSink> messageSinkFactory)
 		{
-			this.inner = inner;
-			this.messageSinks = messageSinks;
+			this.transport = transport;
+			this.messageSinkFactory = messageSinkFactory;
 			this.Subscribe();
 		}
 		public void Dispose()
 		{
-			this.inner.Dispose();
+			this.transport.Dispose();
 			this.Unsubscribe();
 		}
 
 		private void Subscribe()
 		{
-			this.inner.StartedMessageProcessing += this.OnStartedProcessing;
-			this.inner.TransportMessageReceived += this.OnMessageReceived;
-			this.inner.FinishedMessageProcessing += this.OnFinishedProcessing;
-			this.inner.FailedMessageProcessing += this.OnFailedProcessing;
+			this.transport.StartedMessageProcessing += this.OnStartedProcessing;
+			this.transport.TransportMessageReceived += this.OnMessageReceived;
+			this.transport.FinishedMessageProcessing += this.OnFinishedProcessing;
+			this.transport.FailedMessageProcessing += this.OnFailedProcessing;
 		}
 		private void Unsubscribe()
 		{
-			this.inner.TransportMessageReceived -= this.OnMessageReceived;
-			this.inner.StartedMessageProcessing -= this.OnStartedProcessing;
-			this.inner.FinishedMessageProcessing -= this.OnFinishedProcessing;
-			this.inner.FailedMessageProcessing -= this.OnFailedProcessing;
+			this.transport.TransportMessageReceived -= this.OnMessageReceived;
+			this.transport.StartedMessageProcessing -= this.OnStartedProcessing;
+			this.transport.FinishedMessageProcessing -= this.OnFinishedProcessing;
+			this.transport.FailedMessageProcessing -= this.OnFailedProcessing;
 		}
 
-		private void OnStartedProcessing(object sender, EventArgs e)
+		private IMessageSink RootSink
 		{
-			status = new ProcessingStatus(this.messageSinks());
-			status.Initialize();
-			this.NotifyListeners(this.StartedMessageProcessing, () => status.Fail());
+			get
+			{
+				if (null == rootSink)
+					rootSink = this.messageSinkFactory();
+
+				return rootSink;
+			}
 		}
-		private void OnFailedProcessing(object sender, EventArgs e)
+
+		private void OnStartedProcessing(object sender, EventArgs args)
 		{
-			this.NotifyListeners(this.FailedMessageProcessing, () => status.Fail());
-			status.Fail();
+			this.RootSink.Initialize();
+			this.OnTransportEvent(this.StartedMessageProcessing, () => this.RootSink.Failure());
 		}
-		private void OnFinishedProcessing(object sender, EventArgs e)
+		private void OnFailedProcessing(object sender, EventArgs args)
 		{
-			status.Succeed();
-			this.NotifyListeners(this.FinishedMessageProcessing, () => status.Teardown());
+			this.OnTransportEvent(this.FailedMessageProcessing, () => { });
+			this.RootSink.Failure();
 		}
-		private void OnMessageReceived(object sender, TransportMessageReceivedEventArgs e)
+		private void OnFinishedProcessing(object sender, EventArgs args)
 		{
-			var handlers = this.TransportMessageReceived;
-			if (handlers == null)
+			this.RootSink.Success();
+			this.OnTransportEvent(this.FinishedMessageProcessing, () => this.RootSink.Dispose());
+		}
+		private void OnMessageReceived(object sender, TransportMessageReceivedEventArgs args)
+		{
+			this.OnTransportEvent((s, e) =>
+			{
+				var observers = this.TransportMessageReceived;
+				if (observers != null)
+					observers(this, args);
+			}, () => this.RootSink.Failure());
+		}
+
+		private void OnTransportEvent(EventHandler observers, Action onException)
+		{
+			if (observers == null)
 				return;
 
 			try
 			{
-				handlers(this, e);
-			}
-			catch (Exception)
-			{
-				status.Fail();
-				throw;
-			}
-		}
-		private void NotifyListeners(EventHandler handlers, Action onException)
-		{
-			if (handlers == null)
-				return;
-
-			try
-			{
-				handlers(this, EventArgs.Empty);
+				observers(this, EventArgs.Empty);
 			}
 			catch (Exception)
 			{
@@ -89,15 +92,45 @@ namespace NServiceBus.MessageSinks
 
 		public void ReceiveMessageLater(TransportMessage m)
 		{
-			if (status != null)
-				status.Succeed();
+			if (this.RootSink != null)
+				this.RootSink.Success();
 
-			this.inner.ReceiveMessageLater(m);
+			this.transport.ReceiveMessageLater(m);
 		}
 		public void AbortHandlingCurrentMessage()
 		{
-			status.Fail();
-			this.inner.AbortHandlingCurrentMessage();
+			this.RootSink.Failure();
+			this.transport.AbortHandlingCurrentMessage();
 		}
+
+		public void Start()
+		{
+			this.transport.Start();
+		}
+		public void ChangeNumberOfWorkerThreads(int targetNumberOfWorkerThreads)
+		{
+			this.transport.ChangeNumberOfWorkerThreads(targetNumberOfWorkerThreads);
+		}
+		public void Send(TransportMessage m, string destination)
+		{
+			this.transport.Send(m, destination);
+		}
+		public int GetNumberOfPendingMessages()
+		{
+			return this.transport.GetNumberOfPendingMessages();
+		}
+		public int NumberOfWorkerThreads
+		{
+			get { return this.transport.NumberOfWorkerThreads; }
+		}
+		public string Address
+		{
+			get { return this.transport.Address; }
+		}
+
+		public event EventHandler<TransportMessageReceivedEventArgs> TransportMessageReceived;
+		public event EventHandler StartedMessageProcessing;
+		public event EventHandler FinishedMessageProcessing;
+		public event EventHandler FailedMessageProcessing;
 	}
 }

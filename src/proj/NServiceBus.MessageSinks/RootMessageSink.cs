@@ -3,7 +3,7 @@ namespace NServiceBus.MessageSinks
 	using System.Collections.Generic;
 	using System.Linq;
 
-	internal class ProcessingStatus
+	public class RootMessageSink : IMessageSink
 	{
 		private readonly IEnumerable<IMessageSink> sinks;
 
@@ -12,12 +12,12 @@ namespace NServiceBus.MessageSinks
 		private bool failed;
 		private bool disposed;
 
-		public ProcessingStatus(IEnumerable<IMessageSink> sinks)
+		public RootMessageSink(IEnumerable<IMessageSink> sinks)
 		{
 			this.sinks = sinks;
 		}
 
-		public void Initialize()
+		public virtual void Initialize()
 		{
 			if (this.initialized || this.failed || this.disposed)
 				return;
@@ -26,7 +26,7 @@ namespace NServiceBus.MessageSinks
 			foreach (var sink in this.sinks)
 				sink.Initialize();
 		}
-		public void Succeed()
+		public virtual void Success()
 		{
 			if (!this.initialized || this.succeeded || this.failed || this.disposed)
 				return;
@@ -35,9 +35,9 @@ namespace NServiceBus.MessageSinks
 			foreach (var sink in this.sinks.Reverse())
 				sink.Success();
 
-			this.Teardown();
+			this.Dispose();
 		}
-		public void Fail()
+		public virtual void Failure()
 		{
 			if (!this.initialized || this.failed || this.disposed)
 				return;
@@ -46,9 +46,9 @@ namespace NServiceBus.MessageSinks
 			foreach (var sink in this.sinks.Reverse())
 				sink.Failure();
 
-			this.Teardown();
+			this.Dispose();
 		}
-		public void Teardown()
+		public virtual void Dispose()
 		{
 			if (this.disposed)
 				return;
