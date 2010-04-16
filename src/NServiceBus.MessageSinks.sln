@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceBus.MessageSinks", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceBus.MessageSinks.Tests", "tests\NServiceBus.MessageSinks.Tests\NServiceBus.MessageSinks.Tests.csproj", "{CCEA4E1A-3287-4B5B-9810-B03FB538F774}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceBus.MessageSinks.AutofacConfiguration", "proj\NServiceBus.MessageSinks.AutofacConfiguration\NServiceBus.MessageSinks.AutofacConfiguration.csproj", "{8FB6EC7F-D152-403F-9F67-AC1E5CAB36F8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,12 +25,17 @@ Global
 		{CCEA4E1A-3287-4B5B-9810-B03FB538F774}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CCEA4E1A-3287-4B5B-9810-B03FB538F774}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CCEA4E1A-3287-4B5B-9810-B03FB538F774}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FB6EC7F-D152-403F-9F67-AC1E5CAB36F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FB6EC7F-D152-403F-9F67-AC1E5CAB36F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FB6EC7F-D152-403F-9F67-AC1E5CAB36F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FB6EC7F-D152-403F-9F67-AC1E5CAB36F8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7F4C25C4-1C5C-458B-8D2B-0F916774B69B} = {468D41D3-8A1C-45F9-9DFD-63A0303C404F}
+		{8FB6EC7F-D152-403F-9F67-AC1E5CAB36F8} = {468D41D3-8A1C-45F9-9DFD-63A0303C404F}
 		{CCEA4E1A-3287-4B5B-9810-B03FB538F774} = {6C8BF511-1491-4CE7-8C6D-78B85594ED7F}
 	EndGlobalSection
 EndGlobal

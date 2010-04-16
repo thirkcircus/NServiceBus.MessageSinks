@@ -17,7 +17,7 @@ namespace NServiceBus.MessageSinks
 			this.sinks = sinks;
 		}
 
-		public virtual void Initialize()
+		public void Initialize()
 		{
 			if (this.initialized || this.failed || this.disposed)
 				return;
@@ -26,7 +26,7 @@ namespace NServiceBus.MessageSinks
 			foreach (var sink in this.sinks)
 				sink.Initialize();
 		}
-		public virtual void Success()
+		public void Success()
 		{
 			if (!this.initialized || this.succeeded || this.failed || this.disposed)
 				return;
@@ -37,7 +37,7 @@ namespace NServiceBus.MessageSinks
 
 			this.Dispose();
 		}
-		public virtual void Failure()
+		public void Failure()
 		{
 			if (!this.initialized || this.failed || this.disposed)
 				return;
@@ -48,7 +48,7 @@ namespace NServiceBus.MessageSinks
 
 			this.Dispose();
 		}
-		public virtual void Dispose()
+		public void Dispose()
 		{
 			if (this.disposed)
 				return;
