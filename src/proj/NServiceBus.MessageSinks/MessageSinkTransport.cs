@@ -6,12 +6,12 @@ namespace NServiceBus.MessageSinks
 	public class MessageSinkTransport : ITransport
 	{
 		[ThreadStatic]
-		private static IMessageSink rootSink;
+		private static IMessageSink master;
 
 		private readonly ITransport transport;
-		private readonly Func<RootMessageSink> messageSinkFactory;
+		private readonly Func<MasterSink> messageSinkFactory;
 
-		public MessageSinkTransport(ITransport transport, Func<RootMessageSink> messageSinkFactory)
+		public MessageSinkTransport(ITransport transport, Func<MasterSink> messageSinkFactory)
 		{
 			this.transport = transport;
 			this.messageSinkFactory = messageSinkFactory;
@@ -42,10 +42,10 @@ namespace NServiceBus.MessageSinks
 		{
 			get
 			{
-				if (null == rootSink)
-					rootSink = this.messageSinkFactory();
+				if (master == null)
+					master = this.messageSinkFactory();
 
-				return rootSink;
+				return master;
 			}
 		}
 
@@ -83,7 +83,7 @@ namespace NServiceBus.MessageSinks
 			{
 				observers(this, EventArgs.Empty);
 			}
-			catch (Exception)
+			catch
 			{
 				onException();
 				throw;

@@ -3,7 +3,7 @@ namespace NServiceBus.MessageSinks
 	using System.Collections.Generic;
 	using System.Linq;
 
-	public class RootMessageSink : IMessageSink
+	public class MasterSink : IMessageSink
 	{
 		private readonly IEnumerable<IMessageSink> sinks;
 
@@ -12,7 +12,7 @@ namespace NServiceBus.MessageSinks
 		private bool failed;
 		private bool disposed;
 
-		public RootMessageSink(IEnumerable<IMessageSink> sinks)
+		public MasterSink(IEnumerable<IMessageSink> sinks)
 		{
 			this.sinks = sinks;
 		}
