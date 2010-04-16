@@ -4,7 +4,7 @@ namespace NServiceBus.MessageSinks.AutofacConfiguration
 	using Autofac;
 	using Autofac.Builder;
 
-	public class MessageHandlerConfigurationModule : Module
+	internal class MessageHandlerConfigurationModule : Module
 	{
 		private readonly Func<IContainer> containerFactory;
 

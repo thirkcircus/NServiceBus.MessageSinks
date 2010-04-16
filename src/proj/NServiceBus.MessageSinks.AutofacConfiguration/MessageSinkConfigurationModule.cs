@@ -4,7 +4,7 @@ namespace NServiceBus.MessageSinks.AutofacConfiguration
 	using Autofac;
 	using Autofac.Builder;
 
-	public class ThreadSpecificConfigurationModule : Module
+	public class MessageSinkConfigurationModule : Module
 	{
 		[ThreadStatic]
 		private static IContainer threadSpecificContainer;

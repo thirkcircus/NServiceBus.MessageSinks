@@ -7,7 +7,7 @@ namespace NServiceBus.MessageSinks.AutofacConfiguration
 	using Autofac.Builder;
 	using Unicast.Transport;
 
-	public class TransportConfigurationModule : Module
+	internal class TransportConfigurationModule : Module
 	{
 		private readonly Func<IContainer> containerFactory;
 		private readonly Action disposeContainer;
@@ -16,6 +16,17 @@ namespace NServiceBus.MessageSinks.AutofacConfiguration
 		{
 			this.containerFactory = containerFactory;
 			this.disposeContainer = disposeContainer;
+		}
+
+		protected override void Load(ContainerBuilder builder)
+		{
+			base.Load(builder);
+
+			builder
+				.RegisterCollection<IMessageSink>()
+				.As<IEnumerable<IMessageSink>>()
+				.FactoryScoped()
+				.ExternallyOwned();
 		}
 
 		protected override void AttachToComponentRegistration(

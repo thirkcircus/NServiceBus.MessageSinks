@@ -65,7 +65,7 @@
     </Compile>
     <Compile Include="MessageHandlerConfigurationModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ThreadSpecificConfigurationModule.cs" />
+    <Compile Include="MessageSinkConfigurationModule.cs" />
     <Compile Include="TransportConfigurationModule.cs" />
     <Compile Include="TypeExtensions.cs" />
   </ItemGroup>
