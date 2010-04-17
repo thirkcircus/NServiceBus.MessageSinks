@@ -36,9 +36,9 @@ namespace NServiceBus.MessageSinks.AutofacConfiguration
 
 			var registeredType = registration.Descriptor.BestKnownImplementationType;
 			if (registeredType.IsATransport() && typeof(MessageSinkTransport) != registeredType)
-				this.RegisterTransport(container, registeredType);
+				this.OverwriteTransportRegistration(container, registeredType);
 		}
-		private void RegisterTransport(IContainer container, Type registeredType)
+		private void OverwriteTransportRegistration(IContainer container, Type registeredType)
 		{
 			var builder = new ContainerBuilder();
 			builder

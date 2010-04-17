@@ -9,7 +9,7 @@ namespace NServiceBus.MessageSinks.AutofacConfiguration
 		private readonly Func<IContainer> containerFactory;
 
 		[ThreadStatic]
-		private static bool skipPreparation;
+		private static bool alreadyPrepared;
 
 		public MessageHandlerConfigurationModule(Func<IContainer> containerFactory)
 		{
@@ -26,17 +26,17 @@ namespace NServiceBus.MessageSinks.AutofacConfiguration
 		}
 		private void PrepareEventHandler(object sender, PreparingEventArgs args)
 		{
-			if (skipPreparation)
+			if (alreadyPrepared)
 				return;
 
-			skipPreparation = true;
+			alreadyPrepared = true;
 
 			var handlerType = args.Component.Descriptor.BestKnownImplementationType;
 
-			// this causes a recursive call, so we flag skipPreparation
+			// this causes a recursive call, so we flag alreadyPrepared
 			args.Instance = this.containerFactory().Resolve(handlerType);
 
-			skipPreparation = false;
+			alreadyPrepared = false;
 		}
 	}
 }
