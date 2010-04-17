@@ -35,9 +35,11 @@ namespace NServiceBus.MessageSinks.AutofacConfiguration
 			base.AttachToComponentRegistration(container, registration);
 
 			var registeredType = registration.Descriptor.BestKnownImplementationType;
-			if (!registeredType.IsATransport() || typeof(MessageSinkTransport) == registeredType)
-				return;
-
+			if (registeredType.IsATransport() && typeof(MessageSinkTransport) != registeredType)
+				this.RegisterTransport(container, registeredType);
+		}
+		private void RegisterTransport(IContainer container, Type registeredType)
+		{
 			var builder = new ContainerBuilder();
 			builder
 				.Register(c => this.BuildTransportSink(c, registeredType))
