@@ -4,28 +4,16 @@ namespace NServiceBus.MessageSinks
 
 	public class OuterMessageSink : IMessageSink
 	{
-		private readonly Action initialize;
 		private readonly Action dispose;
-
-		private bool initialized;
 		private bool disposed;
 
 		public OuterMessageSink(Action dispose)
-			: this(null, dispose)
 		{
-		}
-		public OuterMessageSink(Action initialize, Action dispose)
-		{
-			this.initialize = initialize ?? (() => { });
 			this.dispose = dispose ?? (() => { });
 		}
 
 		public void Initialize()
 		{
-			if (!this.initialized)
-				this.initialize();
-
-			this.initialized = true;
 		}
 		public void Success()
 		{
