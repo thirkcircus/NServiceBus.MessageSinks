@@ -63,11 +63,16 @@
     <Compile Include="..\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="MessageHandlerConfigurationModule.cs" />
+    <Compile Include="ContainerBuilderExtensions.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="MessageSinkConfigurationModule.cs" />
-    <Compile Include="TransportConfigurationModule.cs" />
-    <Compile Include="TypeExtensions.cs" />
+    <Compile Include="ThreadScopedContainer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MessageSinkConfigurationModule.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NServiceBus.MessageSinks\NServiceBus.MessageSinks.csproj">

@@ -1,59 +1,65 @@
 namespace NServiceBus.MessageSinks.AutofacConfiguration
 {
 	using System;
+	using System.Collections.Generic;
 	using Autofac;
 	using Autofac.Builder;
+	using Autofac.Modules;
+	using Unicast.Transport;
 
 	public class MessageSinkConfigurationModule : Module
 	{
-		[ThreadStatic]
-		private static IContainer threadSpecificContainer;
-		private IContainer rootContainer;
-
 		protected override void Load(ContainerBuilder builder)
 		{
 			base.Load(builder);
 
-			builder.RegisterModule(this.GetTransportConfiguration());
-			builder.RegisterModule(this.GetHandlerConfiguration());
-		}
-		private Module GetTransportConfiguration()
-		{
-			return new TransportConfigurationModule(
-				this.GetThreadSpecificContainer, DisposeThreadSpecificContainer);
-		}
-		private Module GetHandlerConfiguration()
-		{
-			return new MessageHandlerConfigurationModule(this.GetThreadSpecificContainer);
+			builder.RegisterModule(new ImplicitCollectionSupportModule());
+
+			builder
+				.Register(c => new ThreadScopedContainer(c.Resolve<IContainer>()))
+				.As<ThreadScopedContainer>()
+				.SingletonScoped()
+				.ExternallyOwned();
+
+			builder
+				.Register(c => new MasterSink(c.Resolve<IEnumerable<IMessageSink>>()))
+				.As<MasterSink>()
+				.ContainerScoped()
+				.ExternallyOwned();
+
+			builder
+				.Register(c => new OuterMessageSink(c.Resolve<ThreadScopedContainer>().Dispose))
+				.As<IMessageSink>()
+				.ContainerScoped()
+				.ExternallyOwned();
 		}
 
-		private IContainer GetThreadSpecificContainer()
-		{
-			threadSpecificContainer = threadSpecificContainer ?? this.rootContainer.CreateInnerContainer();
-			return threadSpecificContainer;
-		}
-		private static void DisposeThreadSpecificContainer()
-		{
-			if (threadSpecificContainer == null)
-				return;
-
-			threadSpecificContainer.Dispose();
-			threadSpecificContainer = null;
-		}
-
-		protected override void AttachToComponentRegistration(IContainer container, IComponentRegistration registration)
+		protected override void AttachToComponentRegistration(
+			IContainer container, IComponentRegistration registration)
 		{
 			base.AttachToComponentRegistration(container, registration);
 
-			if (this.rootContainer == null)
-				this.rootContainer = this.GetRootContainer(container);
+			var registeredType = registration.Descriptor.BestKnownImplementationType;
+			if (IsConfiguredTransport(registeredType))
+				DecorateTransport(container, registeredType);
 		}
-		private IContainer GetRootContainer(IContainer container)
+		private static bool IsConfiguredTransport(Type typeToEvaluate)
 		{
-			if (container.OuterContainer == null)
-				return container;
-
-			return this.GetRootContainer(container.OuterContainer);
+			return typeof(ITransport).IsAssignableFrom(typeToEvaluate)
+			       && typeof(MessageSinkTransport) != typeToEvaluate
+			       && !typeToEvaluate.IsInterface;
+		}
+		private static void DecorateTransport(IContainer container, Type transportType)
+		{
+			var builder = new ContainerBuilder();
+			builder.Register(c => GetDecoratedTransport(c, transportType)).As<ITransport>().SingletonScoped();
+			builder.Build(container);
+		}
+		private static ITransport GetDecoratedTransport(IContext context, Type transportType)
+		{
+			var container = context.Resolve<ThreadScopedContainer>();
+			return new MessageSinkTransport(
+				context.Resolve(transportType) as ITransport, () => container.Resolve<MasterSink>());
 		}
 	}
 }
