@@ -35,7 +35,11 @@ namespace NServiceBus.MessageSinks.AutofacConfiguration
 
 		#region - Unused -
 
-		public event EventHandler<ComponentRegisteredEventArgs> ComponentRegistered;
+		public event EventHandler<ComponentRegisteredEventArgs> ComponentRegistered
+		{
+			add { this.Decorated.ComponentRegistered += value; }
+			remove { this.Decorated.ComponentRegistered -= value; }
+		}
 		public TService Resolve<TService>(params Parameter[] parameters)
 		{
 			return this.Decorated.Resolve<TService>(parameters);
