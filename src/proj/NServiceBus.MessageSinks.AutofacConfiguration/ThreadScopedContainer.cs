@@ -12,6 +12,9 @@ namespace NServiceBus.MessageSinks.AutofacConfiguration
 
 		public ThreadScopedContainer(IContainer parentContainer)
 		{
+			if (ReferenceEquals(parentContainer, threadScoped))
+				parentContainer = parentContainer.OuterContainer;
+
 			this.parent = parentContainer;
 		}
 		public void Dispose()
